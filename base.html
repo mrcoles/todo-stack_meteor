@@ -1,0 +1,62 @@
+<head>
+  <title>Todo Stack</title>
+  <script src="jquery.hotkeys.js"></script>
+</head>
+
+<body>
+    <div id="header">
+        <div class="inner">
+            <h1>TODO Stack</h1>
+            <a class="add" href="#" onclick="return false" tabindex="0">+</a>
+        </div>
+    </div>
+
+    <div id="content">
+        <div class="inner" id="tasks">
+            {{> helpArrow}}
+            {{> boxes}}
+        </div>
+    </div>
+
+    <div id="under">
+        <div class="inner">
+            <div class="clr">
+                <br>
+                <p class="left br">
+                    Type “?” to see keyboard shortcuts.
+                </p>
+                <p class="right">
+                    made by <a href="http://mrcoles.com">peter coles</a> /
+                    <a href="https://twitter.com/lethys">twit</a> /
+                    <a href="https://github.com/mrcoles/todo-stack">git</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+<template name="helpArrow">
+    <div id="add-helper" class="helper">add a task</div>
+</template>
+
+<template name="boxes">
+    {{#each boxes}}
+    <div class="num">{{i}}</div>
+    <div class="text" tabindex="0">{{text}}</div>
+    <div class="edit-wrap"><input class="edit" type="text" placeholder="enter a new task..." value="{{text}}" /></div>
+    <a class="pop" href="#" onclick="return false" tabindex="0">X</a>
+    {{/each}}
+</template>
+
+<template name="helpModal">
+    <div id="hotkey-modal" class="modal">
+        <a class="close" href="#" onclick="$(this).closest('#hotkey-modal').remove();return false">x</a>
+        <h3>Hotkeys</h3>
+        <dl>
+            {{#each keyevents}}
+            <dt>{{key}}</dt>
+            <dd>{{help}}</dd>
+            {{/each}}
+        </dl>
+    </div>
+</template>
