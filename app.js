@@ -20,7 +20,7 @@ if (Meteor.isClient) {
     // Help Arrow
     //
     Template.helpArrow.show = function() {
-        return Session.get('noBoxes');
+        return !Tasks.find({active: true}).count();
     };
 
     function addTask() {
