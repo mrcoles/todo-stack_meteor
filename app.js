@@ -2,7 +2,15 @@
 //
 // *   seems like I have to put extra js logic into rendered
 //     is that the right way to do it?
-// *   multiple events...
+// *   does multiple events require a space after comma?
+// *   is testing !Sessions.equals('foo', null) worth doing before get
+
+// TODO
+//
+// *   security!
+// *   user accounts
+// *   multiple stacks
+// *   collaboration
 
 Tasks = new Meteor.Collection('tasks');
 
@@ -15,16 +23,21 @@ if (Meteor.isClient) {
         return Session.get('noBoxes');
     };
 
+    function addTask() {
+        //TODO - is there a way to delay server-side insert?
+        var taskId = Tasks.insert({
+            text: '',
+            created: (new Date()).toGMTString(),
+            active: true
+        });
+        Session.set('selectedTask', taskId);
+        Session.set('editTask', taskId);
+    }
+
     Meteor.startup(function() {
         $('#add-task').click(function(e) {
             e.preventDefault();
-            var task = Tasks.insert({
-                text: 'this is a task',
-                created: (new Date()).toGMTString(),
-                active: true
-            });
-            console.log('task', task, task._id); //REM
-            Session.set('selectedTask', task._id);
+            addTask();
         });
     });
 
@@ -51,8 +64,15 @@ if (Meteor.isClient) {
         return Session.equals('editTask', this._id) ? 'editing' : '';
     };
 
+    function popTask(id) {
+        Tasks.update({_id: id}, {$set: {
+            created: (new Date()).toGMTString(),
+            active: false
+        }});
+    }
+
     Template.boxes.events({
-        'mouseenter .box': function(e) {
+        'makeSelected .box, mouseenter .box': function(e) {
             if (!Session.equals('selectedTask', this._id) &&
                 Session.equals('editTask', null)) {
                 Session.set('selectedTask', this._id);
@@ -83,10 +103,7 @@ if (Meteor.isClient) {
         },
         'click a.pop': function(e) {
             e.preventDefault();
-            Tasks.update({_id: this._id}, {$set: {
-                created: (new Date()).toGMTString(),
-                active: false
-            }});
+            popTask(this._id);
         }
     });
 
@@ -118,6 +135,8 @@ if (Meteor.isClient) {
     //
     // Help Modal
     //
+    Session.set('showHelpModal', false);
+
     Template.helpModal.show = function() {
         return Session.get('showHelpModal');
     };
@@ -127,7 +146,89 @@ if (Meteor.isClient) {
     // Global Key Events
     //
     Meteor.startup(function() {
-        
+
+        function next(reverse) {
+            //TODO - a reactive way to do this?
+            //       or at least to trigger makeSelected
+            var $tasks = $('#tasks'),
+                $selected = $tasks.find('.selected'),
+                $new = ($selected.length ?
+                        $selected[reverse?'prev':'next']('.box') :
+                        null);
+            if (!$new || !$new.size()) {
+                $new = $tasks.find('.box')[reverse?'last':'first']();
+            }
+            Session.set('selectedTask', $new.data('id'));
+        };
+
+        // key events
+        var keyevents = [
+            {
+                evt: 'keyup',
+                key: 'a',
+                fn: function(e) {
+                    // note - there's a mysterious bug where
+                    // this gets triggered sometimes on firefox
+                    // on mac osx when using cmd+tab to switch
+                    // applications...
+                    addTask();
+                },
+                help: 'Add a new task'
+            },
+            {
+                evt: 'keypress',
+                key: 'j',
+                fn: function() { next(); },
+                help: 'Select the next task'
+            },
+            {
+                evt: 'keypress',
+                key: 'k',
+                fn: function() { next(true); },
+                help: 'Select the previous task'
+            },
+            {
+                evt: 'keyup',
+                key: 'e',
+                fn: function() {
+                    if (!Session.equals('selectedTask', null)) {
+                        Session.set('editTask', Session.get('selectedTask'));
+                    }
+                },
+                help: 'Edit the selected task'
+            },
+            {
+                evt: 'keyup',
+                key: '#',
+                fn: function() {
+                    if (!Session.equals('selectedTask', null)) {
+                        var id = Session.get('selectedTask');
+                        next();
+                        popTask(id);
+                    }
+                },
+                help: 'Mark the current task as complete'
+            },
+            {
+                evt: 'keyup',
+                key: '?',
+                exactKey: 'shift+/',
+                fn: function() {
+                    Session.set('showHelpModal', true);
+                },
+                help: 'Show the help modal'
+            }
+        ];
+
+        var $doc = $(document);
+
+        _.each(keyevents, function(obj) {
+            $doc.bind(obj.evt, obj.exactKey || obj.key, obj.fn);
+        });
+
+        $doc.bind('keyup', 'esc', function() {
+            Session.set('showHelpModal', false);
+        });
     });
 }
 

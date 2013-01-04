@@ -55,7 +55,7 @@
 </template>
 
 <template name="box">
-    <div class="box {{selected}} {{editing}}">
+    <div class="box {{selected}} {{editing}}" data-id="{{_id}}">
         <div class="num">{{index}}</div>
         <div class="text" tabindex="0">{{text}}</div>
         <div class="edit-wrap"><input class="edit" type="text" placeholder="enter a new task..." value="{{text}}" /></div>
