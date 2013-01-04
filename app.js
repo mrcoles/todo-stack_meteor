@@ -141,85 +141,91 @@ if (Meteor.isClient) {
         return Session.get('showHelpModal');
     };
 
+    function nextBox(reverse) {
+        //TODO - a reactive way to do this?
+        //       or at least to trigger makeSelected
+        var $tasks = $('#tasks'),
+        $selected = $tasks.find('.selected'),
+        $new = ($selected.length ?
+                $selected[reverse?'prev':'next']('.box') :
+                null);
+        if (!$new || !$new.size()) {
+            $new = $tasks.find('.box')[reverse?'last':'first']();
+        }
+        Session.set('selectedTask', $new.data('id'));
+    };
+
+    // key events
+    var keyevents = [
+        {
+            evt: 'keyup',
+            key: 'a',
+            fn: function(e) {
+                // note - there's a mysterious bug where
+                // this gets triggered sometimes on firefox
+                // on mac osx when using cmd+tab to switch
+                // applications...
+                addTask();
+            },
+            help: 'Add a new task'
+        },
+        {
+            evt: 'keypress',
+            key: 'j',
+            fn: function() { nextBox(); },
+            help: 'Select the next task'
+        },
+        {
+            evt: 'keypress',
+            key: 'k',
+            fn: function() { nextBox(true); },
+            help: 'Select the previous task'
+        },
+        {
+            evt: 'keyup',
+            key: 'e',
+            fn: function() {
+                if (!Session.equals('selectedTask', null)) {
+                    Session.set('editTask', Session.get('selectedTask'));
+                }
+            },
+            help: 'Edit the selected task'
+        },
+        {
+            evt: 'keyup',
+            key: '#',
+            fn: function() {
+                if (!Session.equals('selectedTask', null)) {
+                    var id = Session.get('selectedTask');
+                    nextBox();
+                    popTask(id);
+                }
+            },
+            help: 'Mark the current task as complete'
+        },
+        {
+            evt: 'keyup',
+            key: '?',
+            exactKey: 'shift+/',
+            fn: function() {
+                Session.set(
+                    'showHelpModal',
+                    !Session.equals('showHelpModal', true)
+                );
+            },
+            help: 'Show the help modal'
+        }
+    ];
+
+    Template.helpModal.keyevents = function() {
+        return keyevents;
+    };
+
 
     //
     // Global Key Events
     //
     Meteor.startup(function() {
-
-        function next(reverse) {
-            //TODO - a reactive way to do this?
-            //       or at least to trigger makeSelected
-            var $tasks = $('#tasks'),
-                $selected = $tasks.find('.selected'),
-                $new = ($selected.length ?
-                        $selected[reverse?'prev':'next']('.box') :
-                        null);
-            if (!$new || !$new.size()) {
-                $new = $tasks.find('.box')[reverse?'last':'first']();
-            }
-            Session.set('selectedTask', $new.data('id'));
-        };
-
-        // key events
-        var keyevents = [
-            {
-                evt: 'keyup',
-                key: 'a',
-                fn: function(e) {
-                    // note - there's a mysterious bug where
-                    // this gets triggered sometimes on firefox
-                    // on mac osx when using cmd+tab to switch
-                    // applications...
-                    addTask();
-                },
-                help: 'Add a new task'
-            },
-            {
-                evt: 'keypress',
-                key: 'j',
-                fn: function() { next(); },
-                help: 'Select the next task'
-            },
-            {
-                evt: 'keypress',
-                key: 'k',
-                fn: function() { next(true); },
-                help: 'Select the previous task'
-            },
-            {
-                evt: 'keyup',
-                key: 'e',
-                fn: function() {
-                    if (!Session.equals('selectedTask', null)) {
-                        Session.set('editTask', Session.get('selectedTask'));
-                    }
-                },
-                help: 'Edit the selected task'
-            },
-            {
-                evt: 'keyup',
-                key: '#',
-                fn: function() {
-                    if (!Session.equals('selectedTask', null)) {
-                        var id = Session.get('selectedTask');
-                        next();
-                        popTask(id);
-                    }
-                },
-                help: 'Mark the current task as complete'
-            },
-            {
-                evt: 'keyup',
-                key: '?',
-                exactKey: 'shift+/',
-                fn: function() {
-                    Session.set('showHelpModal', true);
-                },
-                help: 'Show the help modal'
-            }
-        ];
-
         var $doc = $(document);
 
         _.each(keyevents, function(obj) {
