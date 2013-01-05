@@ -14,6 +14,20 @@
 
 Tasks = new Meteor.Collection('tasks');
 
+Tasks.allow({
+    insert: function(userId, doc) {
+        return true;
+    },
+    update: function(userId, docs, fields, modifier) {
+        return true;
+    },
+    remove: function(userId, docs) {
+        return true;
+    }
+});
+
+
+
 if (Meteor.isClient) {
 
     //
@@ -239,6 +253,7 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+
     Meteor.startup(function() {
         // code to run on server at startup
     });
