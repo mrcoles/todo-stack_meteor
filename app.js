@@ -1,16 +1,3 @@
-// Questions
-//
-// *   seems like I have to put extra js logic into rendered
-//     is that the right way to do it?
-// *   does multiple events require a space after comma?
-// *   is testing !Sessions.equals('foo', null) worth doing before get
-
-// TODO
-//
-// *   security!
-// *   user accounts
-// *   multiple stacks
-// *   collaboration
 
 Tasks = new Meteor.Collection('tasks');
 
@@ -288,3 +275,10 @@ if (Meteor.isServer) {
         // code to run on server at startup
     });
 }
+
+
+// TODO
+//
+// *   collaboration
+// *   shares?
+// *   ga
