@@ -279,7 +279,8 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
 
     Meteor.publish('userTasks', function() {
-        return Tasks.find({userId: this.userId}); //TODO - avoid when null?
+        return this.userId ?
+            Tasks.find({userId: this.userId}) : null;
     });
 
 
