@@ -5,16 +5,18 @@
 </head>
 
 <body>
-    <div id="header">
-        <div class="inner">
-            <h1>TODO Stack</h1>
-            <a id="add-task" class="add" href="#" onclick="return false" tabindex="0">+</a>
-        </div>
-    </div>
-
     <div id="content" class="clearfix">
+        <div id="header">
+            <div class="inner">
+                <h1>TODO Stack</h1>
+                <a id="add-task" class="add" href="#" onclick="return false" tabindex="0">+</a>
+                {{loginButtons}}
+            </div>
+        </div>
+
         <div class="inner" id="tasks">
-            {{> helpArrow}}
+            {{> addHelper}}
+            {{> loginHelper}}
             {{> boxes}}
         </div>
     </div>
@@ -39,9 +41,15 @@
     {{> helpModal}}
 </body>
 
-<template name="helpArrow">
+<template name="addHelper">
     {{#if show}}
     <div id="add-helper" class="helper">add a task</div>
+    {{/if}}
+</template>
+
+<template name="loginHelper">
+    {{#if show}}
+    <div id="login-helper" class="helper">add a task</div>
     {{/if}}
 </template>
 

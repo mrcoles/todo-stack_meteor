@@ -14,34 +14,56 @@
 
 Tasks = new Meteor.Collection('tasks');
 
+function userIdMatches(userId, docs) {
+    for (var i=0, len=docs.length; i<len; i++) {
+        if (userId != docs[i].userId) {
+            return false;
+        }
+    }
+    return true;
+}
+
 Tasks.allow({
     insert: function(userId, doc) {
-        return true;
+        return userId == doc.userId;
     },
     update: function(userId, docs, fields, modifier) {
-        return true;
+        return userIdMatches(userId, docs);
     },
     remove: function(userId, docs) {
-        return true;
+        return userIdMatches(userId, docs);
     }
 });
 
 
-
 if (Meteor.isClient) {
 
+    Meteor.autosubscribe(function() {
+        Meteor.subscribe('userTasks');
+    });
+
+
     //
-    // Help Arrow
+    // Help Arrows
     //
-    Template.helpArrow.show = function() {
-        return !Tasks.find({active: true}).count();
+    Template.addHelper.show = function() {
+        return (!Template.loginHelper.show() &&
+                !Tasks.find({active: true}).count());
+    };
+
+    Template.loginHelper.show = function() {
+        return !Meteor.user();
     };
 
     function addTask() {
         //TODO - is there a way to delay server-side insert?
+        var userId = Meteor.userId();
+        if (!userId) return;
+
         var taskId = Tasks.insert({
             text: '',
             created: (new Date()).toGMTString(),
+            userId: userId,
             active: true
         });
         Session.set('selectedTask', taskId);
@@ -179,7 +201,9 @@ if (Meteor.isClient) {
                 // this gets triggered sometimes on firefox
                 // on mac osx when using cmd+tab to switch
                 // applications...
-                addTask();
+                if (!$('#login-dropdown-list').size()) { //HACK - for login
+                    addTask();
+                }
             },
             help: 'Add a new task'
         },
@@ -253,6 +277,11 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+
+    Meteor.publish('userTasks', function() {
+        return Tasks.find({userId: this.userId}); //TODO - avoid when null?
+    });
+
 
     Meteor.startup(function() {
         // code to run on server at startup

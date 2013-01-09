@@ -47,7 +47,8 @@ input, textarea {
 }
 
 #header {
-    position: fixed;
+    //TODO - I moved header into #content and didnt clean up well
+    position: relative;
     top: 0;
     left: 0;
     width: 100%;
@@ -59,8 +60,6 @@ input, textarea {
     min-height: 40px;
     z-index: 1001;
 
-    .inner { overflow: hidden; }
-
     h1,
     a.add {
         font-size: 24px;
@@ -69,10 +68,13 @@ input, textarea {
         text-shadow: -1px -1px 0 rgba(0, 0, 0, .75);
     }
 
-    h1 { float: left; }
+    h1 { float: left; margin-right: 20px; }
 
     a.add {
-        float: right;
+        position: absolute;
+        bottom: 0;
+        //top: 0;
+        right: 0;
         text-decoration: none;
         font-weight: bolder;
         width: 60px;
@@ -87,6 +89,21 @@ input, textarea {
             outline: none;
         }
     }
+
+    #login-buttons {
+        margin: 14px 60px 6px 0;
+        min-height: 20px;
+        line-height: 20px;
+
+        a.login-link-text {
+            color: #fff;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
 }
 
 
@@ -94,9 +111,8 @@ input, textarea {
     position: relative;
     min-height: 100%;
 
-    .inner {
-        //margin-top: 40px; <- margin messes with the min-height 100%
-        padding-top: 60px;
+    #tasks {
+        padding-top: 20px;
     }
 }
 
@@ -231,7 +247,7 @@ input, textarea {
     }
 
     .pop {
-        display: none;
+        //display: none;
 
         color: @done-box-dark;
 
@@ -290,4 +306,9 @@ input, textarea {
 	white-space: nowrap;
 	overflow: hidden;
     background: transparent url(add-a-task.png) scroll no-repeat right top;
+}
+
+#login-helper {
+    background-image: url(login.png);
+    background-position: 20px 0;
 }
