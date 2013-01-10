@@ -22,6 +22,10 @@ Tasks.allow({
     }
 });
 
+function getTime(date) {
+    return (date || new Date()).getTime();
+}
+
 
 if (Meteor.isClient) {
 
@@ -49,7 +53,7 @@ if (Meteor.isClient) {
 
         var taskId = Tasks.insert({
             text: '',
-            created: (new Date()).toGMTString(),
+            created: getTime(),
             userId: userId,
             active: true
         });
@@ -89,7 +93,7 @@ if (Meteor.isClient) {
 
     function popTask(id) {
         Tasks.update({_id: id}, {$set: {
-            created: (new Date()).toGMTString(),
+            created: getTime(),
             active: false
         }});
     }
@@ -274,6 +278,29 @@ if (Meteor.isServer) {
     Meteor.startup(function() {
         // code to run on server at startup
     });
+
+
+
+
+    Meteor.methods({
+        fixCreated: function() {
+            Tasks.find({}).forEach(function(x) {
+                if (!/^\d+$/.test(x.created)) {
+                    var t;
+                    try {
+                        t = (new Date(x.created)).getTime();
+                        if (isNaN(t.getTime())) {
+                            throw new Error('not a number!');
+                        }
+                    } catch(e) {
+                        t = (new Date).getTime();
+                    }
+                    Tasks.update({_id: x._id}, {$set: {created: t}});
+                };
+            });
+        }
+    });
+
 }
 
 
