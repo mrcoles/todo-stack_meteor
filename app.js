@@ -277,6 +277,13 @@ if (Meteor.isClient) {
         return keyevents;
     };
 
+    //
+    // Shares
+    //
+    Template.sharesBase.shareUrl = function() {
+        return 'http://todostack.meteor.com';
+    };
+
 
     //
     // Global Key Events
