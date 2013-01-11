@@ -61,11 +61,13 @@ if (Meteor.isClient) {
                 !Tasks.find({active: true}).count());
     };
 
+    var footerHelperState = undefined;
+
     Template.footerHelper.show = function() {
         var user = Meteor.user();
         if (!user) return false;
         var userData = UserData.findOne({userId: user._id});
-        return userData && userData.footerHelper;
+        return (footerHelperState = (userData && userData.footerHelper));
     };
 
     function addTask() {
@@ -291,23 +293,15 @@ if (Meteor.isClient) {
         });
 
         // clear the footer helper state
-        var didUnder = false;
-        function killUnderCheck() {
-            $('#under').off('.footerHelper');
-        }
         $('#under').on(
             'click.footerHelper mouseenter.footerHelper',
             function() {
-                var showFooterHelper = Template.footerHelper.show();
-                if (showFooterHelper === false) {
-                    killUnderCheck();
-                } else if (showFooterHelper === true) {
+                if (footerHelperState) {
                     var user = Meteor.user();
                     if (user) {
                         UserData.update({userId: user._id}, {$set: {
                             footerHelper: false
                         }});
-                        killUnderCheck();
                     }
                 }
             }
@@ -338,7 +332,8 @@ if (Meteor.isServer) {
     Meteor.methods({
         setFooterHelperReady: function() {
             // mark the footer helper as ready to show
-            // in UserData if we havent already set it
+            // in UserData if we havent already set it.
+            // basically an insert on duplicate key update
             this.unblock();
             var userId = this.userId,
                 dataKey = {userId: userId};
