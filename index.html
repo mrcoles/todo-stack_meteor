@@ -21,6 +21,8 @@
             {{> loginHelper}}
             {{> boxes}}
         </div>
+
+        {{> footerHelper}}
     </div>
 
     <div id="under">
@@ -51,7 +53,13 @@
 
 <template name="loginHelper">
     {{#if show}}
-    <div id="login-helper" class="helper">add a task</div>
+    <div id="login-helper" class="helper">login</div>
+    {{/if}}
+</template>
+
+<template name="footerHelper">
+    {{#if show}}
+    <div id="footer-helper" class="helper">see what’s below the fold</div>
     {{/if}}
 </template>
 

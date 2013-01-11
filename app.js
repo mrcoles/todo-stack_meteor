@@ -1,5 +1,6 @@
 
 Tasks = new Meteor.Collection('tasks');
+UserData = new Meteor.Collection('userData');
 
 function userIdMatches(userId, docs) {
     for (var i=0, len=docs.length; i<len; i++) {
@@ -15,10 +16,23 @@ Tasks.allow({
         return userId == doc.userId;
     },
     update: function(userId, docs, fields, modifier) {
-        return userIdMatches(userId, docs);
+        return userIdMatches(userId, docs) &&
+            fields.userId === undefined;
     },
     remove: function(userId, docs) {
         return userIdMatches(userId, docs);
+    }
+});
+
+UserData.allow({
+    insert: function(userId, doc) {
+        return false;
+    },
+    update: function(userId, docs, fields, modifier) {
+        return userIdMatches(userId, docs);
+    },
+    remove: function(userId, docs) {
+        return false;
     }
 });
 
@@ -31,19 +45,27 @@ if (Meteor.isClient) {
 
     Meteor.autosubscribe(function() {
         Meteor.subscribe('userTasks');
+        Meteor.subscribe('userData');
     });
 
 
     //
     // Help Arrows
     //
+    Template.loginHelper.show = function() {
+        return !Meteor.user();
+    };
+
     Template.addHelper.show = function() {
         return (!Template.loginHelper.show() &&
                 !Tasks.find({active: true}).count());
     };
 
-    Template.loginHelper.show = function() {
-        return !Meteor.user();
+    Template.footerHelper.show = function() {
+        var user = Meteor.user();
+        if (!user) return false;
+        var userData = UserData.findOne({userId: user._id});
+        return userData && userData.footerHelper;
     };
 
     function addTask() {
@@ -96,6 +118,9 @@ if (Meteor.isClient) {
             created: getTime(),
             active: false
         }});
+        Meteor.call('setFooterHelperReady', function(error, result) {
+            console.log('[setFooterHelperReady]', error, result);
+        });
     }
 
     Template.boxes.events({
@@ -172,10 +197,10 @@ if (Meteor.isClient) {
         //TODO - a reactive way to do this?
         //       or at least to trigger makeSelected
         var $tasks = $('#tasks'),
-        $selected = $tasks.find('.selected'),
-        $new = ($selected.length ?
-                $selected[reverse?'prev':'next']('.box') :
-                null);
+            $selected = $tasks.find('.selected'),
+            $new = ($selected.length ?
+                    $selected[reverse?'prev':'next']('.box') :
+                    null);
         if (!$new || !$new.size()) {
             $new = $tasks.find('.box')[reverse?'last':'first']();
         }
@@ -264,6 +289,29 @@ if (Meteor.isClient) {
         $doc.bind('keyup', 'esc', function() {
             Session.set('showHelpModal', false);
         });
+
+        // clear the footer helper state
+        var didUnder = false;
+        function killUnderCheck() {
+            $('#under').off('.footerHelper');
+        }
+        $('#under').on(
+            'click.footerHelper mouseenter.footerHelper',
+            function() {
+                var showFooterHelper = Template.footerHelper.show();
+                if (showFooterHelper === false) {
+                    killUnderCheck();
+                } else if (showFooterHelper === true) {
+                    var user = Meteor.user();
+                    if (user) {
+                        UserData.update({userId: user._id}, {$set: {
+                            footerHelper: false
+                        }});
+                        killUnderCheck();
+                    }
+                }
+            }
+        );
     });
 }
 
@@ -272,6 +320,11 @@ if (Meteor.isServer) {
     Meteor.publish('userTasks', function() {
         return this.userId ?
             Tasks.find({userId: this.userId}) : null;
+    });
+
+    Meteor.publish('userData', function() {
+        return this.userId ?
+            UserData.find({userId: this.userId}) : null;
     });
 
 
@@ -283,6 +336,27 @@ if (Meteor.isServer) {
 
 
     Meteor.methods({
+        setFooterHelperReady: function() {
+            // mark the footer helper as ready to show
+            // in UserData if we havent already set it
+            this.unblock();
+            var userId = this.userId,
+                dataKey = {userId: userId};
+            if (userId) {
+                var data = UserData.findOne(dataKey) ||
+                    UserData.insert({
+                        userId: userId,
+                        footerHelper: true
+                    });
+                if (data.footerHelper === undefined) {
+                    UserData.update(dataKey, {$set: {
+                        footerHelper: true
+                    }});
+                }
+                return data;
+            }
+            return null;
+        },
         fixCreated: function() {
             Tasks.find({}).forEach(function(x) {
                 if (!/^\d+$/.test(x.created)) {
