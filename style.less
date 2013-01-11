@@ -10,6 +10,12 @@
 @font-size: 14px;
 @line-height: 20px;
 
+.x {
+    font-size: 24px;
+    line-height: 36px;
+    margin-bottom: 36px;
+}
+
 @box-font-size: 20px;
 @box-line-height: 40px;
 
@@ -268,13 +274,11 @@ input, textarea {
 }
 
 #intro {
-    padding-top: @line-height*2;
-
-    font-size: @font-size;
-    line-height: @line-height;
+    padding: @line-height*2 0;
 
     p {
-        margin-bottom: @line-height;
+        .x;
+        font-weight: 200;
     }
 }
 
