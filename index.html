@@ -102,7 +102,7 @@
         <div class="num">{{index}}</div>
         <div class="text" tabindex="0">{{text}}</div>
         <div class="edit-wrap"><input class="edit" type="text" placeholder="enter a new task..." value="{{text}}" /></div>
-        <a class="pop" href="#" onclick="return false" tabindex="0">X</a>
+        <a class="pop" href="#" onclick="return false" tabindex="0">{{#if active }}mark complete{{else}}remove{{/if}}</a>
     </div>
 </template>
 
