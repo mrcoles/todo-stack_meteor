@@ -28,6 +28,35 @@
        -o-transition: @transition;
           transition: @transition;
 }
+.box-shadow(@arguments) {
+  -webkit-box-shadow: @arguments;
+  -moz-box-shadow: @arguments;
+  box-shadow: @arguments;
+}
+.box-shadow2(@args1, @args2) {
+  -webkit-box-shadow: @args1, @args2;
+  -moz-box-shadow: @args1, @args2;
+  box-shadow: @args1, @args2;
+}
+.rounded(@radius: 2px) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  border-radius: @radius;
+}
+.border-radius(@topright: 0, @bottomright: 0, @bottomleft: 0, @topleft: 0) {
+  -webkit-border-top-right-radius: @topright;
+  -webkit-border-bottom-right-radius: @bottomright;
+  -webkit-border-bottom-left-radius: @bottomleft;
+  -webkit-border-top-left-radius: @topleft;
+  -moz-border-radius-topright: @topright;
+  -moz-border-radius-bottomright: @bottomright;
+  -moz-border-radius-bottomleft: @bottomleft;
+  -moz-border-radius-topleft: @topleft;
+  border-top-right-radius: @topright;
+  border-bottom-right-radius: @bottomright;
+  border-bottom-left-radius: @bottomleft;
+  border-top-left-radius: @topleft;
+}
 
 
 html,body,div,p,h1,h2,h3,h4,h5,h6{margin:0; padding:0;}
@@ -70,7 +99,7 @@ input, textarea {
     background-color: #2c2c2c;
     background-image: -moz-linear-gradient(center top , #333333, #222222);
     background-repeat: repeat-x;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 -1px 0 rgba(0, 0, 0, 0.1) inset;
+    .box-shadow2(0 1px 3px rgba(0, 0, 0, 0.25), 0 -1px 0 rgba(0, 0, 0, 0.1) inset);
     min-height: 40px;
     z-index: 1001;
 
@@ -93,7 +122,7 @@ input, textarea {
         font-weight: bolder;
         width: 60px;
         text-align: center;
-        border-radius: 4px;
+        .rounded(4px);
         background: #333;
         background: rgba(255, 255, 255, .1);
 
@@ -165,14 +194,16 @@ input, textarea {
 
 .box {
     position: relative;
-    border: 4px solid @box-dark;
+    border: 4px solid @box-light;
     padding: 6px 6px 6px 11px;
     margin: 0 0 20px;
     min-height: @box-line-height;
     background: @box-light;
     color: @box-dark;
     text-align: center;
-    border-radius: 10px;
+    .rounded(10px);
+
+    .box-shadow(1px 1px 1px rgba(0,0,0,.25));
 
     font-size: @box-font-size;
     line-height: @box-line-height;
@@ -187,7 +218,7 @@ input, textarea {
         margin: 5px 25px 0 0;
         width: 30px;
         height: 30px;
-        border-radius: 15px;
+        .rounded(15px);
         font-size: 20px;
         line-height: 30px;
         background: @box-dark;
@@ -220,8 +251,7 @@ input, textarea {
     }
 
     &.selected {
-        background: @box-active-bg;
-        //margin-left: -20px;
+        border-color: @box-dark;
     }
 
     &.editing {
@@ -241,7 +271,7 @@ input, textarea {
         text-align: center;
         text-decoration: none;
         color: @box-dark;
-        border-radius: 10px;
+        .rounded(10px);
         background-image: url(icons.png);
         background-position: 0 0;
         background-repeat: no-repeat;
@@ -260,7 +290,7 @@ input, textarea {
 }
 
 #under .box {
-    border-color: @done-box-dark;
+    border-color: @done-box-light; //dark;
     background: @done-box-light;
     color: @done-box-dark;
 
@@ -302,7 +332,7 @@ input, textarea {
     z-index: 10;
     background: #000;
     background: rgba(0, 0, 0, .75);
-    border-radius: 6px;
+    .rounded(6px);
     padding: 20px;
     color: #fff;
 
@@ -355,8 +385,8 @@ input, textarea {
     width: 220px;
     margin: 0 0 0 -110px;
     background: #fff url(more-down-here.png) no-repeat center bottom;
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -2px 6px rgba(255,255,255,.5);
+    .border-radius(20px 20px 0 0);
+    .box-shadow(0 -2px 6px rgba(255,255,255,.5));
 }
 
 .shares {
