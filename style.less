@@ -193,9 +193,11 @@ input, textarea {
 .br { margin-bottom: @line-height; }
 
 .box {
+    @box-padding-vertical: 10px;
+    @box-border-size: 3px;
     position: relative;
-    border: 4px solid @box-light;
-    padding: 6px 6px 6px 11px;
+    border-bottom: @box-border-size solid @box-light;
+    padding: @box-padding-vertical 6px (@box-padding-vertical - @box-border-size) 11px;
     margin: 0 0 20px;
     min-height: @box-line-height;
     background: @box-light;
@@ -256,6 +258,9 @@ input, textarea {
 
     &.editing {
         background: @box-active-bg;
+        padding-bottom: @box-padding-vertical;
+        border-width: 0;
+        .box-shadow(inset 1px 1px 3px rgba(0, 0, 0, .75));
 
         .edit-wrap { display: block; }
         .text { display: none; }
@@ -263,7 +268,7 @@ input, textarea {
 
     .pop {
         position: absolute;
-        top: 8px;
+        top: 12px;
         right: 6px;
         width: @box-line-height - 4;
         line-height: @box-line-height - 4;
