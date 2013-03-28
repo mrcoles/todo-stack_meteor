@@ -1,3 +1,4 @@
+@import "elements";
 
 @box-dark: #118822;
 @box-light: lighten(@box-dark, 40%);
@@ -22,40 +23,10 @@
 @box-text-line-height: 30px;
 @box-text-vertical-margin: (@box-line-height - @box-text-line-height) / 2;
 
-.transition(@transition) {
-  -webkit-transition: @transition;
-     -moz-transition: @transition;
-       -o-transition: @transition;
-          transition: @transition;
-}
-.box-shadow(@arguments) {
-  -webkit-box-shadow: @arguments;
-  -moz-box-shadow: @arguments;
-  box-shadow: @arguments;
-}
 .box-shadow2(@args1, @args2) {
   -webkit-box-shadow: @args1, @args2;
   -moz-box-shadow: @args1, @args2;
   box-shadow: @args1, @args2;
-}
-.rounded(@radius: 2px) {
-  -webkit-border-radius: @radius;
-  -moz-border-radius: @radius;
-  border-radius: @radius;
-}
-.border-radius(@topright: 0, @bottomright: 0, @bottomleft: 0, @topleft: 0) {
-  -webkit-border-top-right-radius: @topright;
-  -webkit-border-bottom-right-radius: @bottomright;
-  -webkit-border-bottom-left-radius: @bottomleft;
-  -webkit-border-top-left-radius: @topleft;
-  -moz-border-radius-topright: @topright;
-  -moz-border-radius-bottomright: @bottomright;
-  -moz-border-radius-bottomleft: @bottomleft;
-  -moz-border-radius-topleft: @topleft;
-  border-top-right-radius: @topright;
-  border-bottom-right-radius: @bottomright;
-  border-bottom-left-radius: @bottomleft;
-  border-top-left-radius: @topleft;
 }
 
 
@@ -218,7 +189,8 @@ input, textarea {
     .num {
         float: left;
         margin: 5px 25px 0 0;
-        width: 30px;
+        padding: 0 8px;
+        min-width: 14px; // allow wider numbers to not get cut off
         height: 30px;
         .rounded(15px);
         font-size: 20px;
@@ -389,9 +361,9 @@ input, textarea {
     height: 120px;
     width: 220px;
     margin: 0 0 0 -110px;
-    background: #fff url(more-down-here.png) no-repeat center bottom;
-    .border-radius(20px 20px 0 0);
-    .box-shadow(0 -2px 6px rgba(255,255,255,.5));
+    background: transparent url(more-down-here.png) no-repeat center bottom;
+    //.border-radius(20px 20px 0 0);
+    //.box-shadow(0 -2px 6px rgba(255,255,255,.5));
 }
 
 .shares {
