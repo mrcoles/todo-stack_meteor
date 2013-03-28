@@ -29,7 +29,8 @@ UserData.allow({
         return false;
     },
     update: function(userId, docs, fields, modifier) {
-        return userIdMatches(userId, docs);
+        return userIdMatches(userId, docs) &&
+            ('userId' in fields ? fields.userId == userId : true);
     },
     remove: function(userId, docs) {
         return false;
@@ -43,11 +44,10 @@ function getTime(date) {
 
 if (Meteor.isClient) {
 
-    Meteor.autosubscribe(function() {
+    Meteor.autorun(function() {
         Meteor.subscribe('userTasks');
         Meteor.subscribe('userData');
     });
-
 
     //
     // Help Arrows
@@ -306,9 +306,7 @@ if (Meteor.isClient) {
                 if (footerHelperState) {
                     var user = Meteor.user();
                     if (user) {
-                        UserData.update({userId: user._id}, {$set: {
-                            footerHelper: false
-                        }});
+                        Meteor.call('setFooterHelperSeen');
                     }
                 }
             }
@@ -358,6 +356,18 @@ if (Meteor.isServer) {
                 return data;
             }
             return null;
+        },
+        setFooterHelperSeen: function() {
+            this.unblock();
+            var userId = this.userId,
+                dataKey = {userId: userId};
+            if (userId) {
+                UserData.update(dataKey, {userId: userId}, {$set: {
+                    footerHelper: false
+                }});
+                return true;
+            }
+            return false;
         },
         fixCreated: function() {
             Tasks.find({}).forEach(function(x) {
