@@ -340,16 +340,15 @@ if (Meteor.isServer) {
             // in UserData if we havent already set it.
             // basically an insert on duplicate key update
             this.unblock();
-            var userId = this.userId,
-                dataKey = {userId: userId};
+            var userId = this.userId;
             if (userId) {
-                var data = UserData.findOne(dataKey) ||
+                var data = UserData.findOne({userId: userId}) ||
                     UserData.insert({
                         userId: userId,
                         footerHelper: true
                     });
                 if (data.footerHelper === undefined) {
-                    UserData.update(dataKey, {$set: {
+                    UserData.update({_id: data._id}, {$set: {
                         footerHelper: true
                     }});
                 }
@@ -359,10 +358,9 @@ if (Meteor.isServer) {
         },
         setFooterHelperSeen: function() {
             this.unblock();
-            var userId = this.userId,
-                dataKey = {userId: userId};
+            var userId = this.userId;
             if (userId) {
-                UserData.update(dataKey, {userId: userId}, {$set: {
+                UserData.update({userId: userId}, {$set: {
                     footerHelper: false
                 }});
                 return true;
