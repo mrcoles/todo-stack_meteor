@@ -12,14 +12,18 @@
             <div class="inner">
                 <h1>TODO Stack</h1>
                 <a id="add-task" class="add" href="#" onclick="return false" tabindex="0">+</a>
-                {{loginButtons}}
+                {{#unless loggingIn}}{{loginButtons}}{{/unless}}
             </div>
         </div>
 
         <div class="inner" id="tasks">
+            {{#if loggingIn}}
+            <div class="loading">loading…</div>
+            {{else}}
             {{> addHelper}}
             {{> loginHelper}}
             {{> boxes}}
+            {{/if}}
         </div>
 
         {{> footerHelper}}
