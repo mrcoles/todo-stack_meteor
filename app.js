@@ -85,11 +85,15 @@ if (Meteor.isClient) {
         Session.set('editTask', taskId);
     }
 
-    Meteor.startup(function() {
-        $('#add-task').click(function(e) {
+    //
+    // Add Task
+    //
+
+    Template.addTask.events({
+        'click #add-task': function(e) {
             e.preventDefault();
             addTask();
-        });
+        }
     });
 
     //

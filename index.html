@@ -11,7 +11,7 @@
         <div id="header">
             <div class="inner">
                 <h1>TODO Stack</h1>
-                <a id="add-task" class="add" href="#" onclick="return false" tabindex="0">+</a>
+                {{> addTask}}
                 {{#unless loggingIn}}{{loginButtons}}{{/unless}}
             </div>
         </div>
@@ -49,6 +49,10 @@
 
     {{> helpModal}}
 </body>
+
+<template name="addTask">
+    <a id="add-task" class="add" href="#" onclick="return false" tabindex="0">+</a>
+</template>
 
 <template name="addHelper">
     {{#if show}}
