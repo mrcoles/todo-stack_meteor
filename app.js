@@ -96,6 +96,41 @@ if (Meteor.isClient) {
         }
     });
 
+    Template.footerInfo.events({
+        'click #email-list': function(e) {
+            e.preventDefault();
+
+            // get tasks
+            var tasks = Template.boxes.tasks(),
+                body = [];
+            tasks = tasks.map(function(task) {
+                return task.text;
+            });
+            for (var i = tasks.length; i>0; i--) {
+                body.push(i + '. ' + tasks[i-1]);
+            }
+            body = ('\n' +
+                    body.join('\n') +
+                    '\n\n--\nhttp://todostack.meteor.com/');
+
+            // create query string
+            var qs = $.param({
+                body: body,
+                subject: document.title
+            }).replace(/\+/g, '%20');
+
+            // get email
+            var user = Meteor.user(), email;
+            if (user && user.emails) {
+                email = user.emails[0].address;
+            }
+            email = email || '';
+
+            var url = 'mailto:' + encodeURIComponent(email) + '?'+qs;
+            window.location = url;
+        }
+    });
+
     //
     // Boxes
     //

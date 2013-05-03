@@ -32,18 +32,8 @@
     <div id="under">
         <div class="inner">
             {{> inactiveBoxes}}
-            <div class="shares">{{> sharesBase}}</div>
-            <div class="clr">
-                <br>
-                <p class="left br">
-                    Type “?” to see keyboard shortcuts.
-                </p>
-                <p class="right">
-                    made by <a href="http://mrcoles.com">peter coles</a> /
-                    <a href="https://twitter.com/lethys">twitter</a> /
-                    <a href="https://github.com/mrcoles/todo-stack_meteor">github</a>
-                </p>
-            </div>
+            {{#constant}}<div class="shares">{{> sharesBase}}</div>{{/constant}}
+            {{> footerInfo}}
         </div>
     </div>
 
@@ -117,7 +107,7 @@
 <template name="helpModal">
     {{#if show}}
     <div id="hotkey-modal" class="modal">
-        <a class="close" href="#" onclick="$(this).closest('#hotkey-modal').remove();return false">x</a>
+        <a class="close" href="#" onclick="$(this).closest('#hotkey-modal').remove();return false">&times;</a>
         <h3>Hotkeys</h3>
         <dl>
             {{#each keyevents}}
@@ -127,4 +117,21 @@
         </dl>
     </div>
     {{/if}}
+</template>
+
+<template name="footerInfo">
+    <div class="clr">
+        <br>
+        <p class="left br">
+            Type “?” for help.
+            {{#if currentUser}}
+            View in <a id="email-list" href="#" onclick="return false">email</a>.
+            {{/if}}
+        </p>
+        <p class="right">
+            made by <a href="http://mrcoles.com">peter coles</a> /
+            <a href="https://twitter.com/lethys">twitter</a> /
+            <a href="https://github.com/mrcoles/todo-stack_meteor">github</a>
+        </p>
+    </div>
 </template>
